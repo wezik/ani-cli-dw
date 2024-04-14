@@ -106,6 +106,7 @@ func main() {
                 counter++
                 if (counter >= 10) {
                         wg.Wait()
+                        counter = 0 
                 }
         }
 
