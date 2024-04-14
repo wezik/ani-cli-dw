@@ -102,12 +102,12 @@ func main() {
 
         for i := rangeStart; i <= rangeEnd; i++ {
                 dlWrapper := DLWrapper{anime, animeEntryId, i, quality, animeDir}
-                go downloadEpisode(dlWrapper, &wg)
-                counter++
                 if (counter >= 10) {
                         wg.Wait()
                         counter = 0 
                 }
+                go downloadEpisode(dlWrapper, &wg)
+                counter++
         }
 
         wg.Wait()
