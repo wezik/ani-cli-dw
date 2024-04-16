@@ -15,7 +15,8 @@ To use ani-cli-dw, follow these steps:
 8. Follow the rest of the prompts to initiate the download.
 
 ## Requirements
-[github.com/pystardust/ani-cli](https://github.com/pystardust/ani-cli) installed and running 
+- Windows (for now) as it runs cmd.exe  
+- [github.com/pystardust/ani-cli](https://github.com/pystardust/ani-cli) installed and running 
 
 ## How to build
 simply run `go build`
