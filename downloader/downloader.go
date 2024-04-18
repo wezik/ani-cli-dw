@@ -1,33 +1,43 @@
-package main
+package downloader
 
 import (
-        "fmt"
-        "os/exec"
-        "sort"
-        "strings"
-        "sync"
+	"ani-cli-dw/logger"
+	"ani-cli-dw/utils"
+	"fmt"
+	"os/exec"
+	"sort"
+	"strings"
+	"sync"
 )
 
-func Download(input InputWrapper, destination string) {
-        InfoLogger.Println("Setting up downloads")
+type DLWrapper struct {
+        title       string
+        entryId     int
+        episode     int
+        quality     int
+        downloadDir string
+}
+
+func Download(input utils.InputWrapper, destination string) {
+        logger.Info.Println("Setting up downloads")
 
         var wg sync.WaitGroup
-        wg.Add(input.rangeEnd - input.rangeStart + 1)
-        semaphore := make(chan struct{}, input.threadCount)
+        wg.Add(input.RangeEnd - input.RangeStart + 1)
+        semaphore := make(chan struct{}, input.ThreadCount)
 
-        InfoLogger.Println("Starting download routines")
+        logger.Info.Println("Starting download routines")
 
         var failedDownloads []DLWrapper
 
-        for episode := input.rangeStart; episode <= input.rangeEnd; episode++ {
+        for episode := input.RangeStart; episode <= input.RangeEnd; episode++ {
 
                 semaphore <- struct{}{}
 
                 wrapper := DLWrapper{
-                        input.title,
-                        input.entryId,
+                        input.Title,
+                        input.EntryId,
                         episode,
-                        input.quality,
+                        input.Quality,
                         destination, 
                 }
 
@@ -49,10 +59,10 @@ func Download(input InputWrapper, destination string) {
         sort.Ints(episodes)
 
         if len(episodes) > 0 {
-                WarningLogger.Printf("Episodes %v failed to download!", episodes)
+                logger.Warning.Printf("Episodes %v failed to download!", episodes)
         }
 
-        InfoLogger.Println("Downloading finished")
+        logger.Info.Println("Downloading finished")
 }
 
 func downloadEpisode(wrapper DLWrapper, wg *sync.WaitGroup, semaphore chan struct{}) error {
@@ -77,13 +87,13 @@ func downloadEpisode(wrapper DLWrapper, wg *sync.WaitGroup, semaphore chan struc
 
         cmd.Dir = wrapper.downloadDir
 
-        InfoLogger.Printf("%s download start", prefix)
+        logger.Info.Printf("%s download start", prefix)
         err := cmd.Run()
         if err != nil {
-                WarningLogger.Printf("%s download fail! :%v", prefix, err)
+                logger.Warning.Printf("%s download fail! :%v", prefix, err)
                 return err
         }
 
-        InfoLogger.Printf("%s downloaded success", prefix)
+        logger.Info.Printf("%s downloaded success", prefix)
         return nil
 }
